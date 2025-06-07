@@ -72,19 +72,30 @@
 // }
 
 
-//test case 2 forkk valgrind not initialised var çünkü gc
+#include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+
 int main(void)
 {
-	t_gc gc;
+	t_gc gc = {0};
 	gc.head = NULL;
 	gc.roots = NULL;
 	gc.paused = 0;
 
 	pid_t pid = fork();
 
+    //due to forks, valgrind cause give errors, not leaks..
 	if (pid == 0)
 	{
-		// child
+		// CHILD
+        //without define __builtin_frame_address to any void *,
+	    //it'll cause to not initialised values in valgrind, ++asan clear..
+		void *stack_top = __builtin_frame_address(0);
+
 		char *child_kept = gc_strdup(&gc, "çocuk kurtulacak");
 		char *child_lost = gc_strdup(&gc, "çocuk gidecek");
 
@@ -92,7 +103,7 @@ int main(void)
 
 		child_lost = NULL;
 
-		gc_collect_unreachable(&gc, __builtin_frame_address(0));
+		gc_collect_unreachable(&gc, stack_top);
 
 		printf("child kept: %s\n", child_kept);
 		printf("child lost is freed\n");
@@ -103,18 +114,22 @@ int main(void)
 	else
 	{
 		wait(NULL);
+
+		void *stack_top = __builtin_frame_address(0);
+
 		char *parent_kept = gc_strdup(&gc, "parent hayatta kalacak");
 		char *parent_lost = gc_strdup(&gc, "parent gidecek");
 
-		gc_track_roots(&gc, &parent_kept, (void *)&parent_kept + sizeof(char *));
+		gc_track_roots(&gc, &parent_kept, (void *)(&parent_kept + 1));
 
 		parent_lost = NULL;
 
-		gc_collect_unreachable(&gc, __builtin_frame_address(0));
+		gc_collect_unreachable(&gc, stack_top);
 
 		printf("parent kept: %s\n", parent_kept);
-		printf(" parent is freed\n");
+		printf("parent is freed\n");
 
 		gc_clear(&gc);
 	}
+	return (0);
 }

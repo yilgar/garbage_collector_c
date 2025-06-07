@@ -5,6 +5,7 @@ void	gc_scan_area(t_gc *gc, unsigned long *start, unsigned long *end)
 {
 	void	*maybe_ptr;
 
+	maybe_ptr = NULL;
 	while (start < end)
 	{
 		maybe_ptr = (void *)*start;
@@ -16,12 +17,21 @@ void	gc_scan_area(t_gc *gc, unsigned long *start, unsigned long *end)
 
 static void gc_mark_stack_and_root(t_gc *gc, void *bot_stack)
 {
-    unsigned long local_var;
+    void 			*local_var;
     unsigned long *stack_pointer;
     t_gc_root *r;
 
+	
+	local_var = NULL;
+	r = NULL;
     stack_pointer = (unsigned long *)&local_var;
-    gc_scan_area(gc, stack_pointer, (unsigned long *)bot_stack);
+	
+	//linux safe mem alanı
+    if (stack_pointer < (unsigned long *)bot_stack)
+        gc_scan_area(gc, stack_pointer, (unsigned long *)bot_stack);
+    else
+        gc_scan_area(gc, (unsigned long *)bot_stack, stack_pointer);
+
     r = gc->roots;
     while (r)
     {
@@ -29,6 +39,23 @@ static void gc_mark_stack_and_root(t_gc *gc, void *bot_stack)
         r = r->next;
     }
 }
+
+//backup without mem diff < >
+// static void gc_mark_stack_and_root(t_gc *gc, void *bot_stack)
+// {
+//     unsigned long local_var;
+//     unsigned long *stack_pointer;
+//     t_gc_root *r;
+
+//     stack_pointer = (unsigned long *)&local_var;
+//     gc_scan_area(gc, stack_pointer, (unsigned long *)bot_stack);
+//     r = gc->roots;
+//     while (r)
+//     {
+//         gc_scan_area(gc, (unsigned long *)r->start, (unsigned long *)r->end);
+//         r = r->next;
+//     }
+// }
 
 static void	gc_sweep_unmarked(t_gc *gc)
 {

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/time.h>
+#include <stdint.h>
 
 
 typedef struct s_gc_node
@@ -53,6 +54,7 @@ char	*gc_strdup(t_gc *gc, const char *s);
 char	*gc_strjoin(t_gc *gc, char const *s1, char const *s2);
 void	gc_pause(t_gc *gc);
 void	gc_resume(t_gc *gc);
+char	**gc_split(t_gc *gc, const char *s, char c);
 
 
 #endif

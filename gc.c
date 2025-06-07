@@ -97,52 +97,120 @@
 // 	return (0);
 // }
 
-
-// int main()
+// int	main(void)
 // {
-// 	t_gc gc;
-
+// 	t_gc	gc = {0};
 // 	gc.head = NULL;
 // 	gc.roots = NULL;
 // 	gc.paused = 0;
 
+// 	char	**result;
+// 	char	*str;
+// 	void	*stack_bottom;
 
-// 	char *kept = gc_strdup(&gc, "kaşık");
-// 	char *str = gc_strdup(&gc, "gidecek");
-// 	char *str1 = gc_strdup(&gc, "elma");
-
-// 	printf(" %s .. track öncesi1\n", kept);
-// 	printf(" %s .. track öncesi1\n", str);
-// 	printf(" %s .. track öncesi1\n", str1);
-// 	gc_track_roots(&gc, &kept, (void *)&kept + sizeof(char *));
-
-	
-
-	
-// 	printf("%s .. track sonrası2\n", kept);
-// 	printf("%s .. track sonrası2\n", str);
-// 	printf("%s .. track sonrası2\n", str1);
-
-	
-// 	gc_collect_unreachable(&gc, __builtin_frame_address(0));
 // 	str = NULL;
-// 	str1 = NULL;
-
+// 	result = NULL;
 	
-// 	if (kept)
-// 		printf("%s .. unreachable sonrası3\n", kept);
-// 	else
-// 		printf("freed\n");
-		
-// 	if (str)
-// 		printf("%s .. unreachable sonrası3\n", str);
-// 	else
-// 		printf("freed\n");
-// 	if (str1)
-// 		printf("%s .. unreachable sonrası3\n", str1);
-// 	else
-// 		printf("freed\n");
+// 	stack_bottom = __builtin_frame_address(0);
+// 	str = "merhaba bu bir testtir";
+
+// 	// Burada local değişken adresi kullan, daha güvenli
+
+// 	result = gc_split(&gc, str, ' ');
+// 	gc_track_roots(&gc, &result, (void *)(&result + 1));
+
+// 	for (int i = 0; result[i]; i++)
+// 		printf("token[%d] = %s\n", i, result[i]);
+
+// 	// Asıl kritik kısım burada, fonksiyon içine stack referansı yolla
+// 	gc_collect_unreachable(&gc, stack_bottom);
 
 // 	gc_clear(&gc);
+// 	return (0);
 // }
+
+
+// void gc_init(t_gc *gc)
+// {
+// 	gc->head = NULL;
+// 	gc->roots = NULL;
+// 	gc->paused = 0;
+// }
+
+// int main(void)
+// {
+// 	t_gc *gc = malloc(sizeof(t_gc));
+// 	void *stack_top = __builtin_frame_address(0);
+
+// 	if (!gc)
+// 		return (1); // malloc başarısızsa çık
+
+// 	// initialize garbage collector (boş root/head/null yap, vs.)
+// 	gc_init(gc); // bu fonksiyonu senin tanımlamış olman gerek
+
+// 	char *line = gc_strdup(gc, "merhaba bu bir testtir");
+// 	char **tokens = gc_split(gc, line, ' ');
+
+// 	for (int i = 0; tokens[i]; i++)
+// 		printf("token[%d] = %s\n", i, tokens[i]);
+
+// 	gc_collect_unreachable(gc, stack_top);
+
+// 	for (int i = 0; tokens[i]; i++)
+// 		printf("token[%d] after GC: %s\n", i, tokens[i]);
+
+// 	gc_clear(gc); // tüm memory free eder
+// 	free(gc);     // en son kendisini de serbest bırak
+// }
+
+
+
+int main()
+{
+	t_gc gc = {0};
+
+	gc.head = NULL;
+	gc.roots = NULL;
+	gc.paused = 0;
+
+	//without define __builtin_frame_address to any void *,
+	//it'll cause to not initialised values in valgrind, ++asan clear..
+	void *stack_top = __builtin_frame_address(0);
+
+	char *kept = gc_strdup(&gc, "kaşık");
+	char *str = gc_strdup(&gc, "gidecek");
+	char *str1 = gc_strdup(&gc, "elma");
+
+	printf(" %s .. track öncesi1\n", kept);
+	printf(" %s .. track öncesi1\n", str);
+	printf(" %s .. track öncesi1\n", str1);
+	gc_track_roots(&gc, &kept, (void *)&kept + sizeof(char *));
+
+	
+	printf("%s .. track sonrası2\n", kept);
+	printf("%s .. track sonrası2\n", str);
+	printf("%s .. track sonrası2\n", str1);
+
+	
+	gc_collect_unreachable(&gc, stack_top);
+	str = NULL;
+	str1 = NULL;
+
+	
+	if (kept)
+		printf("%s .. unreachable sonrası3\n", kept);
+	else
+		printf("freed\n");
+		
+	if (str)
+		printf("%s .. unreachable sonrası3\n", str);
+	else
+		printf("freed\n");
+	if (str1)
+		printf("%s .. unreachable sonrası3\n", str1);
+	else
+		printf("freed\n");
+
+	gc_clear(&gc);
+}
 

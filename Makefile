@@ -6,10 +6,10 @@ CC = cc
 
 CFLAGS = 
 
-SRCS = gc.c gc_utils.c gc_malloc.c gc_track.c gc_unreachable.c
+SRCS = gc.c gc_utils.c gc_malloc.c gc_track.c gc_unreachable.c gc_split.c
 
 
-SRCS_FORK = gc_fork.c gc_utils.c gc_malloc.c gc_track.c gc_unreachable.c
+SRCS_FORK = gc_fork.c gc_utils.c gc_malloc.c gc_track.c gc_unreachable.c gc_split.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -19,7 +19,7 @@ OBJS_FORK = $(SRCS_FORK:.c=.o)
 
 all: $(NAME)
 $(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+	@$(CC) $(CFLAGS) -g -o $(NAME) $(OBJS)
 
 
 fork: $(NAME_FORK)

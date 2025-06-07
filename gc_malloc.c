@@ -119,6 +119,7 @@ void	gc_clear(t_gc *gc)
 		free(gc->head);
 		gc->head = tmp_node;
 	}
+	// GC root'larını temizle
 	while (gc->roots)
 	{
 		tmp_root = gc->roots->next;
