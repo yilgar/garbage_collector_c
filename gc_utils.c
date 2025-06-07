@@ -56,3 +56,15 @@ char	*gc_strjoin(t_gc *gc, char const *s1, char const *s2)
 	s[i] = '\0';
 	return (s);
 }
+
+void	gc_pause(t_gc *gc)
+{
+	if (gc)
+		gc->paused = 1;
+}
+
+void	gc_resume(t_gc *gc)
+{
+	if (gc)
+		gc->paused = 0;
+}

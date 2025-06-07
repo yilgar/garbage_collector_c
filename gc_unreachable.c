@@ -58,6 +58,8 @@ static void	gc_sweep_unmarked(t_gc *gc)
 
 void	gc_collect_unreachable(t_gc *gc, void *stack_bottom)
 {
+	if (gc->paused)
+		return ;
 	gc_reset_mark(gc);
 	gc_mark_stack_and_root(gc, stack_bottom);
 	gc_sweep_unmarked(gc);

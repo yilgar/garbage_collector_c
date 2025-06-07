@@ -29,9 +29,6 @@ void	gc_mark_ptr_if_found(t_gc *gc, void *possible)
 	}
 }
 
-
-
-
 void gc_reset_mark(t_gc *gc)
 {
 	t_gc_node *cur;

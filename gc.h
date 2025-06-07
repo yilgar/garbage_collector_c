@@ -29,6 +29,8 @@ typedef struct s_gc
 {
 	t_gc_node *head;
 	t_gc_root *roots;
+
+	int		paused;
 } t_gc;
 
 //gc utils
@@ -49,6 +51,8 @@ void	gc_collect_unreachable(t_gc *gc, void *stack_bottom);
 //gc funcs
 char	*gc_strdup(t_gc *gc, const char *s);
 char	*gc_strjoin(t_gc *gc, char const *s1, char const *s2);
+void	gc_pause(t_gc *gc);
+void	gc_resume(t_gc *gc);
 
 
 #endif
