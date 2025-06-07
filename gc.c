@@ -98,49 +98,51 @@
 // }
 
 
-int main()
-{
-	t_gc gc;
+// int main()
+// {
+// 	t_gc gc;
 
-	gc.head = NULL;
-	gc.roots = NULL;
-	gc.paused = 0;
+// 	gc.head = NULL;
+// 	gc.roots = NULL;
+// 	gc.paused = 0;
 
 
-	char *kept = gc_strdup(&gc, "kaşık");
-	char *str = gc_strdup(&gc, "gidecek");
-	char *str1 = gc_strdup(&gc, "elma");
+// 	char *kept = gc_strdup(&gc, "kaşık");
+// 	char *str = gc_strdup(&gc, "gidecek");
+// 	char *str1 = gc_strdup(&gc, "elma");
 
-	printf(" %s .. track öncesi1\n", kept);
-	printf(" %s .. track öncesi1\n", str);
-	printf(" %s .. track öncesi1\n", str1);
-
-	gc_track_roots(&gc, &kept, (void *)&kept + sizeof(char *));
-
-	
-	printf("%s .. track sonrası2\n", kept);
-	printf("%s .. track sonrası2\n", str);
-	printf("%s .. track sonrası2\n", str1);
+// 	printf(" %s .. track öncesi1\n", kept);
+// 	printf(" %s .. track öncesi1\n", str);
+// 	printf(" %s .. track öncesi1\n", str1);
+// 	gc_track_roots(&gc, &kept, (void *)&kept + sizeof(char *));
 
 	
-	gc_collect_unreachable(&gc, __builtin_frame_address(0));
-	str = NULL;
-	str1 = NULL;
 
 	
-	if (kept)
-		printf("%s .. unreachable sonrası3\n", kept);
-	else
-		printf("freed\n");
+// 	printf("%s .. track sonrası2\n", kept);
+// 	printf("%s .. track sonrası2\n", str);
+// 	printf("%s .. track sonrası2\n", str1);
+
+	
+// 	gc_collect_unreachable(&gc, __builtin_frame_address(0));
+// 	str = NULL;
+// 	str1 = NULL;
+
+	
+// 	if (kept)
+// 		printf("%s .. unreachable sonrası3\n", kept);
+// 	else
+// 		printf("freed\n");
 		
-	if (str)
-		printf("%s .. unreachable sonrası3\n", str);
-	else
-		printf("freed\n");
-	if (str1)
-		printf("%s .. unreachable sonrası3\n", str1);
-	else
-		printf("freed\n");
+// 	if (str)
+// 		printf("%s .. unreachable sonrası3\n", str);
+// 	else
+// 		printf("freed\n");
+// 	if (str1)
+// 		printf("%s .. unreachable sonrası3\n", str1);
+// 	else
+// 		printf("freed\n");
 
-	gc_clear(&gc);
-}
+// 	gc_clear(&gc);
+// }
+

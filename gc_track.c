@@ -15,19 +15,24 @@ static t_gc_root	*new_root(void *start, void *end)
 
 void	gc_mark_ptr_if_found(t_gc *gc, void *possible)
 {
-	t_gc_node *cur = gc->head;
+	unsigned long	addr = (unsigned long)possible;
 
+	//linux safe mem alanı
+	if (addr < 4096 || addr > 0x7fffffffffff) 
+		return ;
+
+	t_gc_node	*cur = gc->head;
 	while (cur)
 	{
-		if (possible >= cur->ptr &&
-			possible < (void *)((char *)cur->ptr + cur->size))
+		if (cur->ptr == possible && cur->mark == 0)
 		{
 			cur->mark = 1;
-			return;
+			break;
 		}
 		cur = cur->next;
 	}
 }
+
 
 void gc_reset_mark(t_gc *gc)
 {

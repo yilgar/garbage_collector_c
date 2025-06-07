@@ -109,22 +109,20 @@ void	gc_free_one(t_gc *gc, void *ptr)
 
 void	gc_clear(t_gc *gc)
 {
-    t_gc_node	*tmp;
-    while (gc->head)
-    {
-        tmp = gc->head->next;
-        free(gc->head->ptr);
-        free(gc->head);
-        gc->head = tmp;
-    }
-    // ROOT LİSTESİNİ DE TEMİZLE
-    t_gc_root *r = gc->roots;
-    t_gc_root *r_tmp;
-    while (r)
-    {
-        r_tmp = r->next;
-        free(r);
-        r = r_tmp;
-    }
-    gc->roots = NULL;
+	t_gc_node	*tmp_node;
+	t_gc_root	*tmp_root;
+
+	while (gc->head)
+	{
+		tmp_node = gc->head->next;
+		free(gc->head->ptr);
+		free(gc->head);
+		gc->head = tmp_node;
+	}
+	while (gc->roots)
+	{
+		tmp_root = gc->roots->next;
+		free(gc->roots);
+		gc->roots = tmp_root;
+	}
 }

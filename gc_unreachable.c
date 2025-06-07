@@ -1,17 +1,36 @@
 #include "gc.h"
 #include <string.h>
 
-void	gc_scan_area(t_gc *gc, unsigned long *start, unsigned long *end)
-{
-	void	*maybe_ptr;
+// void	gc_scan_area(t_gc *gc, unsigned long *start, unsigned long *end)
+// {
+// 	void	*maybe_ptr;
 
-	while (start < end)
+// 	while (start < end)
+// 	{
+// 		maybe_ptr = (void *)*start;
+// 		gc_mark_ptr_if_found(gc, maybe_ptr);
+// 		start++;
+// 	}
+// }
+
+void	gc_scan_area(t_gc *gc, void *start, void *end)
+{
+	void **p = (void **)start;
+	void **limit = (void **)end;
+
+	while (p < limit)
 	{
-		maybe_ptr = (void *)*start;
-		gc_mark_ptr_if_found(gc, maybe_ptr);
-		start++;
+		void *possible;
+		__builtin_memcpy(&possible, p, sizeof(void *));
+		
+		unsigned long addr = (unsigned long)possible;
+		if (addr > 4096 && addr < 0x7fffffffffff)
+			gc_mark_ptr_if_found(gc, possible);
+		p++;
 	}
 }
+
+
 
 static void gc_mark_stack_and_root(t_gc *gc, void *bot_stack)
 {
