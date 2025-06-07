@@ -71,6 +71,8 @@
 // 	return (0);
 // }
 
+
+//test case 2 forkk valgrind not initialised var çünkü gc
 int main(void)
 {
 	t_gc gc;
@@ -95,7 +97,7 @@ int main(void)
 		printf("child kept: %s\n", child_kept);
 		printf("child lost is freed\n");
 
-		gc_clear(&gc); // SAKIN UNUTMA
+		gc_clear(&gc);
 		exit(0);
 	}
 	else
